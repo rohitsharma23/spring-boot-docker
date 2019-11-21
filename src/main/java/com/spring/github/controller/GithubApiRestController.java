@@ -1,13 +1,17 @@
 package com.spring.github.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,7 +32,7 @@ public class GithubApiRestController {
 	@ResponseBody
 	@RequestMapping(value = { "/events" }, method = { RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> postEvents(@RequestBody Event event) {
-
+		System.out.println("############## POST ###########");
 		String str = service.save(event);
 		if (null != str)
 			return ResponseEntity.status(HttpStatus.CREATED).body(str);
@@ -47,7 +51,11 @@ public class GithubApiRestController {
 
 	@ResponseBody
 	@RequestMapping(value = { "/events" }, method = { RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Event>> getEvents() {
+	public ResponseEntity<List<Event>> getEvents(@RequestHeader Map<String, String> headers) {
+		System.out.println("*************** GET **************");
+		/*headers.forEach((key, value) -> {
+			System.out.println(String.format("Header '%s' = %s", key, value));
+		});*/
 
 		return ResponseEntity.status(HttpStatus.OK).body(service.getAll());
 	}
@@ -65,8 +73,7 @@ public class GithubApiRestController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/actors" }, method = {
-			RequestMethod.PUT }, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = { "/actors" }, method = { RequestMethod.PUT }, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> getAllEventsByActors(@RequestBody Actor actor) {
 
 		int status = service.updateAvatarUrl(actor);
@@ -89,7 +96,8 @@ public class GithubApiRestController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = { "/actors/streak" }, method = { RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = { "/actors/streak" }, method = {
+			RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Actor>> getActorsByEventsStreak() {
 
 		List<Actor> actors = service.getActorsByEventsStreak();
