@@ -53,9 +53,10 @@ public class GithubApiRestController {
 	@RequestMapping(value = { "/events" }, method = { RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Event>> getEvents(@RequestHeader Map<String, String> headers) {
 		System.out.println("*************** GET **************");
-		/*headers.forEach((key, value) -> {
-			System.out.println(String.format("Header '%s' = %s", key, value));
-		});*/
+		/*
+		 * headers.forEach((key, value) -> {
+		 * System.out.println(String.format("Header '%s' = %s", key, value)); });
+		 */
 
 		return ResponseEntity.status(HttpStatus.OK).body(service.getAll());
 	}
@@ -102,5 +103,14 @@ public class GithubApiRestController {
 
 		List<Actor> actors = service.getActorsByEventsStreak();
 		return ResponseEntity.status(HttpStatus.OK).body(actors);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = { "/allowed/{name}" }, method = {
+			RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Boolean> checkAllowed(@PathVariable String name) {
+
+		Boolean allowed = service.checkAllowed(name);
+		return ResponseEntity.status(HttpStatus.OK).body(allowed);
 	}
 }

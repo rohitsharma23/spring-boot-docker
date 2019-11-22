@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -19,12 +20,15 @@ import org.springframework.stereotype.Service;
 
 import com.spring.github.entity.ActorEntity;
 import com.spring.github.entity.CustomActor;
+import com.spring.github.entity.EmployeeEntity;
 import com.spring.github.entity.EventEntity;
 import com.spring.github.entity.RepoEntity;
 import com.spring.github.model.Actor;
+import com.spring.github.model.Employee;
 import com.spring.github.model.Event;
 import com.spring.github.model.Repo;
 import com.spring.github.repository.ActorRepository;
+import com.spring.github.repository.EmployeeRepository;
 import com.spring.github.repository.EventRepository;
 import com.spring.github.repository.RepoRepository;
 
@@ -37,6 +41,8 @@ public class GithubApiRestService {
 	private ActorRepository actorRepository;
 	@Autowired
 	private RepoRepository repoRepository;
+	@Autowired
+	private EmployeeRepository employeeRepository;
 
 	public String save(Event event) {
 
@@ -156,19 +162,19 @@ public class GithubApiRestService {
 			Timestamp prev = timestamps.get(0);
 			for (int i = 1; i < timestamps.size(); i++) {
 				Timestamp next = timestamps.get(i);
-				
+
 				SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
-				
-				Date dPrev= new Date();
-				Date dNext= new Date();
+
+				Date dPrev = new Date();
+				Date dNext = new Date();
 				try {
-					dPrev= myFormat.parse(prev.toString().substring(0, prev.toString().indexOf(' ')));
-					dNext=myFormat.parse(next.toString().substring(0, next.toString().indexOf(' ')));
+					dPrev = myFormat.parse(prev.toString().substring(0, prev.toString().indexOf(' ')));
+					dNext = myFormat.parse(next.toString().substring(0, next.toString().indexOf(' ')));
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
-				
-				if (TimeUnit.DAYS.convert((dPrev.getTime()-dNext.getTime()), TimeUnit.MILLISECONDS) == 1) {
+
+				if (TimeUnit.DAYS.convert((dPrev.getTime() - dNext.getTime()), TimeUnit.MILLISECONDS) == 1) {
 					streak++;
 				} else {
 					streak = 0;
@@ -207,4 +213,13 @@ public class GithubApiRestService {
 		return actors;
 
 	}
+
+	public Boolean checkAllowed(String name) {
+		List<EmployeeEntity> employeeEntities = employeeRepository.findAll();
+		Optional<EmployeeEntity> e = employeeEntities.stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst();
+		if (e.isPresent() && e.get().getName().equalsIgnoreCase("admin"))
+			return true;
+		return false;
+	}
+
 }
