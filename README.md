@@ -5,6 +5,8 @@ dockerised spring boot app
 Sample curl for the post and get. 
 
 POST : saves details of an actor
+
+
 curl --location --request POST 'http://host:port/events' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -24,4 +26,6 @@ curl --location --request POST 'http://host:port/events' \
 }'
 
 GET: gets details of all actors
+
+
 curl --location --request GET 'http://host:port/events'
